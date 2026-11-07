@@ -1,5 +1,9 @@
+"use client";
+
 import Image, { type StaticImageData } from "next/image";
+
 import RevealSection from "./RevealSection";
+import { BorderBeam } from "./BorderBeam";
 
 interface ProjectCardProps {
   name: string;
@@ -23,8 +27,11 @@ export default function ProjectCard({
   return (
     <RevealSection
       delay={delay}
-      className="w-full flex flex-col gap-2 p-2 justify-between border-4 border-gray-400 rounded-xl text-center shadow-2xl hover:scale-105 transform duration-300 bg-zinc-200"
+      className="relative w-full flex flex-col gap-2 p-2 justify-between rounded-xl text-center shadow-2xl hover:scale-105 transform duration-300 bg-darkPurple text-white"
     >
+      {/* Running border beam — offset by card index so each starts at a different position */}
+      <BorderBeam duration={5} size={80} initialOffset={((delay / 100) * 11) % 100} />
+
       <div className="aspect-20/13 overflow-hidden rounded-lg relative">
         <Image
           className="object-cover"
@@ -37,13 +44,13 @@ export default function ProjectCard({
 
       <h2 className="font-semibold">{name}</h2>
 
-      <p className="text-sm font-light">{about}</p>
+      <p className="text-sm font-light text-pink/80">{about}</p>
 
       <div className="flex flex-wrap justify-center gap-1.5">
         {tech.map((item) => (
           <span
             key={item}
-            className="text-xs font-medium px-2 py-0.5 rounded-full bg-darkPurple text-white"
+            className="text-xs font-medium px-2 py-0.5 rounded-full bg-mediumPurple text-pink border border-lightPurple/40"
           >
             {item}
           </span>
@@ -63,7 +70,6 @@ export default function ProjectCard({
             alt="GitHub"
             width={32}
             height={32}
-            unoptimized
             className="w-full h-auto"
           />
         </a>
