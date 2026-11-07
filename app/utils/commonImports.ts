@@ -46,7 +46,7 @@ import postPilotImg from "../assets/Projects/postPilot.webp";
 import stegoVaultImg from "../assets/Projects/stegoVault.webp";
 import p2pStreamImg from "../assets/Projects/p2pStream.webp";
 // import liveSiteLink from "../assets/Tech/liveSiteLink.gif";
-import githubLink from "../assets/Tech/githubLink.gif";
+import githubLink from "../assets/Tech/GitHub.svg";
 
 export interface TechIcon {
   name: string;
