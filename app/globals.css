@@ -27,6 +27,13 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Fluid heading for RotatingRole — scales smoothly from ~2.25rem (mobile)
+   up to 4.5rem (large desktop) so long roles never wrap or overflow */
+.text-fluid-role {
+  font-size: clamp(2.25rem, 5.5vw, 3.5rem);
+  line-height: 1.15;
+}
+
 .bg-gradient-slant {
   background: radial-gradient(circle at bottom right, #291c3a 45%, #8121d0);
 }

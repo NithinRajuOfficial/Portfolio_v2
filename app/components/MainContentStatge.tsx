@@ -21,7 +21,7 @@ export default function MainContainer() {
         <h1 className="text-3xl font-semibold pb-2">About Me</h1>
 
         <p className="text-xl font-normal leading-8 text-wrap text-pink/90">
-          Hi, I&apos;m Nithin Raju, a Full Stack Developer who enjoys building
+          Hi, I&apos;m Nithin Raju, a Software Engineer who enjoys building
           production-grade web platforms that solve real problems at scale. Over
           the past years, I&apos;ve worked across React, Next.js, TypeScript,
           and Node.js to ship everything from a custom video/media player and

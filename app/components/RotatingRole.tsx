@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
-const roles = ["Developer", "Problem Solver", "MERN Engineer"];
+const roles = ["Full Stack Developer", "Software Engineer", "GEN AI Engineer"];
 
 export default function RotatingRole() {
   const [index, setIndex] = useState(0);

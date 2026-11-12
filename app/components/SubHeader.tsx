@@ -25,15 +25,15 @@ export default function SubHeader() {
           Hello<span className="animate-pulse">👋</span>
         </p>
 
-        <p className="text-4xl md:text-6xl leading-10">I&apos;m a</p>
+        <p className="text-4xl md:text-5xl leading-10">I&apos;m a</p>
 
-        <p className="text-6xl md:text-7xl pb-4 min-h-[1.15em] md:min-h-[1.15em]">
+        <p className="text-fluid-role pb-4 min-h-[1.15em] max-w-4">
           <RotatingRole />
         </p>
 
-        <p className="text-xl md:text-2xl font-semibold">
+        {/* <p className="text-xl md:text-2xl font-semibold">
           I build things for web.
-        </p>
+        </p> */}
 
         <div className="flex gap-3 p-1">
           {socialMediaList.map((elm) => (

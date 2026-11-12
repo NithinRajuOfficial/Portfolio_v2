@@ -152,7 +152,7 @@ const projectData = [
       "Canvas API",
     ],
     img: stegoVaultImg,
-    // liveLink: "https://stego-vault.nithin.website/",
+    // liveLink: "https://stego-vault-secure.vercel.app/",
     codeLink: "https://github.com/NithinRajuOfficial/Stego_Vault",
     // liveSite: liveSiteLink,
     github: githubLink,

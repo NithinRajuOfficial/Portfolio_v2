@@ -3,6 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
+// ─── constants ────────────────────────────────────────────────────────────────
+
+const MAX_QUESTION_LENGTH = 500;
+const SESSION_MESSAGE_CAP = 20; // user messages only
+const POST_RESPONSE_COOLDOWN_MS = 1500;
+
 // ─── types ────────────────────────────────────────────────────────────────────
 
 interface Message {
@@ -137,6 +143,23 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const [isCoolingDown, setIsCoolingDown] = useState(false);
+
+  const cooldownTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Count only user messages toward the cap
+  const userMessageCount = messages.filter((m) => m.role === "user").length;
+  const isSessionCapped = userMessageCount >= SESSION_MESSAGE_CAP;
+  const charCount = input.length;
+  const isNearLimit = charCount >= MAX_QUESTION_LENGTH - 100;
+  const isAtLimit = charCount >= MAX_QUESTION_LENGTH;
+
+  // Clean up cooldown timer on unmount
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) clearTimeout(cooldownTimerRef.current);
+    };
+  }, []);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -175,7 +198,7 @@ export default function ChatWidget() {
   const sendMessage = useCallback(
     async (text: string) => {
       const question = text.trim();
-      if (!question || isLoading) return;
+      if (!question || isLoading || isCoolingDown || isSessionCapped) return;
 
       const userMsg: Message = {
         id: crypto.randomUUID(),
@@ -202,13 +225,21 @@ export default function ChatWidget() {
           error?: string;
         };
 
+        let content: string;
+        if (response.status === 429) {
+          content =
+            "You're sending messages too quickly. Please wait a moment before trying again.";
+        } else {
+          content =
+            data.answer ??
+            data.error ??
+            "Sorry, something went wrong. Please try again.";
+        }
+
         const aiMsg: Message = {
           id: crypto.randomUUID(),
           role: "model",
-          content:
-            data.answer ??
-            data.error ??
-            "Sorry, something went wrong. Please try again.",
+          content,
         };
         setMessages((prev) => [...prev, aiMsg]);
       } catch {
@@ -223,9 +254,14 @@ export default function ChatWidget() {
         ]);
       } finally {
         setIsLoading(false);
+        // Start cooldown after each response so the user can't rapid-fire
+        setIsCoolingDown(true);
+        cooldownTimerRef.current = setTimeout(() => {
+          setIsCoolingDown(false);
+        }, POST_RESPONSE_COOLDOWN_MS);
       }
     },
-    [isLoading, buildHistory],
+    [isLoading, isCoolingDown, isSessionCapped, buildHistory],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -316,7 +352,8 @@ export default function ChatWidget() {
                   key={q}
                   type="button"
                   onClick={() => void sendMessage(q)}
-                  className="text-[11px] px-2.5 py-1 rounded-full bg-mediumPurple text-pink border border-lightPurple/30 hover:border-lightPurple/70 hover:bg-lightPurple/10 transition-colors"
+                  disabled={isCoolingDown || isSessionCapped}
+                  className="text-[11px] px-2.5 py-1 rounded-full bg-mediumPurple text-pink border border-lightPurple/30 hover:border-lightPurple/70 hover:bg-lightPurple/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {q}
                 </button>
@@ -326,33 +363,51 @@ export default function ChatWidget() {
 
           {/* Input */}
           <div className="px-3 pb-3 pt-2 border-t border-lightPurple/25 flex-shrink-0">
-            <div className="flex items-end gap-2 bg-mediumPurple rounded-xl px-3 py-2 border border-lightPurple/30 focus-within:border-lightPurple/70 transition-colors">
-              <textarea
-                ref={inputRef}
-                rows={1}
-                value={input}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                disabled={isLoading}
-                placeholder="Ask anything about Nithin…"
-                aria-label="Chat input"
-                className="flex-1 bg-transparent text-[13px] text-pink placeholder:text-pink/35 resize-none outline-none leading-relaxed disabled:opacity-50 min-h-[20px] max-h-24"
-              />
-              <button
-                type="button"
-                onClick={() => void sendMessage(input)}
-                disabled={isLoading || !input.trim()}
-                aria-label="Send message"
-                className="w-7 h-7 rounded-lg bg-lightPurple flex items-center justify-center flex-shrink-0 self-end mb-0.5 hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
-              >
-                <SendIcon className="w-3.5 h-3.5 text-white hover:cursor-pointer" />
-              </button>
-            </div>
+            {isSessionCapped ? (
+              <p className="text-center text-[11px] text-pink/50 py-2">
+                Session limit reached. Refresh the page to start a new chat.
+              </p>
+            ) : (
+              <>
+                <div className="flex items-end gap-2 bg-mediumPurple rounded-xl px-3 py-2 border border-lightPurple/30 focus-within:border-lightPurple/70 transition-colors">
+                  <textarea
+                    ref={inputRef}
+                    rows={1}
+                    value={input}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
+                    disabled={isLoading || isCoolingDown}
+                    maxLength={MAX_QUESTION_LENGTH}
+                    placeholder="Ask anything about Nithin…"
+                    aria-label="Chat input"
+                    className="flex-1 bg-transparent text-[13px] text-pink placeholder:text-pink/35 resize-none outline-none leading-relaxed disabled:opacity-50 min-h-[20px] max-h-24"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => void sendMessage(input)}
+                    disabled={isLoading || isCoolingDown || !input.trim()}
+                    aria-label="Send message"
+                    className="w-7 h-7 rounded-lg bg-lightPurple flex items-center justify-center flex-shrink-0 self-end mb-0.5 hover:opacity-85 disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+                  >
+                    <SendIcon className="w-3.5 h-3.5 text-white hover:cursor-pointer" />
+                  </button>
+                </div>
+                {isNearLimit && (
+                  <p
+                    className={`text-right text-[10px] mt-1 pr-1 ${
+                      isAtLimit ? "text-red-400" : "text-pink/40"
+                    }`}
+                  >
+                    {charCount}/{MAX_QUESTION_LENGTH}
+                  </p>
+                )}
+              </>
+            )}
           </div>
 
           {/* Footer */}
           <div className="text-center text-[10px] text-pink/30 pb-2 flex-shrink-0">
-            Gemini 2.5 Flash Lite · RAG over resume &amp; portfolio
+            Gemini 3.5 Flash Lite · RAG over resume &amp; portfolio
           </div>
         </div>
 
