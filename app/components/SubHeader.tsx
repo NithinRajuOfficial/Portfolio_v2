@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { socialMediaList } from "../utils/commonImports";
 import RotatingRole from "./RotatingRole";
 import { useMediaQuery } from "../hooks/useMediaQuery";
+import GridLayout from "./GridLayout";
 
 const HeroModel = dynamic(() => import("./HeroModel"), {
   ssr: false,
@@ -20,6 +21,7 @@ export default function SubHeader() {
       id="home"
       className="herobg-gradient-slant flex justify-between relative"
     >
+      <GridLayout />
       <div className="px-8 pt-28 md:px-20 md:py-36 text-white font-black duration-300">
         <p className="sm:text-xl md:text-2xl lg:text-2xl pb-4 font-bold">
           Hello<span className="animate-pulse">👋</span>

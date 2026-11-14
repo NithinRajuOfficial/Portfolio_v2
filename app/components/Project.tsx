@@ -1,4 +1,5 @@
 import { projectData } from "../utils/commonImports";
+import GridLayout from "./GridLayout";
 import ProjectCard from "./ProjectCard";
 
 export default function ProjectContainer() {
@@ -7,16 +8,7 @@ export default function ProjectContainer() {
       id="projects"
       className="relative px-6 md:px-20 py-10 bg-mediumPurple text-white overflow-hidden"
     >
-      {/* Line grid background pattern */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `linear-gradient(rgba(220,207,237,0.06) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(220,207,237,0.06) 1px, transparent 1px)`,
-          backgroundSize: "48px 48px",
-        }}
-      />
+      <GridLayout />
 
       <div className="relative">
         <h1 className="text-2xl font-semibold">My Projects</h1>

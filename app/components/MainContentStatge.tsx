@@ -1,3 +1,4 @@
+import GridLayout from "./GridLayout";
 import RevealSection from "./RevealSection";
 
 export default function MainContainer() {
@@ -6,16 +7,7 @@ export default function MainContainer() {
       id="about"
       className="relative flex flex-col md:flex-row h-auto px-6 md:px-20 py-12 gap-8 md:gap-16 bg-mediumPurple text-white overflow-hidden"
     >
-      {/* Line grid background pattern */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          backgroundImage: `linear-gradient(rgba(220,207,237,0.06) 1px, transparent 1px),
-                            linear-gradient(90deg, rgba(220,207,237,0.06) 1px, transparent 1px)`,
-          backgroundSize: "48px 48px",
-        }}
-      />
+     <GridLayout />
 
       <RevealSection className="relative self-start flex-1">
         <h1 className="text-3xl font-semibold pb-2">About Me</h1>

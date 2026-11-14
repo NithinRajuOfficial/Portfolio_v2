@@ -12,6 +12,7 @@ interface ProjectCardProps {
   img: StaticImageData | string;
   codeLink: string;
   github: StaticImageData | string;
+  liveLink?: string;
   delay: number;
 }
 
@@ -22,8 +23,11 @@ export default function ProjectCard({
   img,
   codeLink,
   github,
+  liveLink,
   delay,
 }: ProjectCardProps) {
+  const showLive = Boolean(liveLink);
+
   return (
     <RevealSection
       delay={delay}
@@ -58,21 +62,47 @@ export default function ProjectCard({
       </div>
 
       <div className="flex justify-center gap-6">
-        <a
-          href={codeLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`View ${name} source code on GitHub`}
-          className="w-8 hover:scale-125 duration-300"
-        >
-          <Image
-            src={github}
-            alt="GitHub"
-            width={32}
-            height={32}
-            className="w-full h-auto"
-          />
-        </a>
+        {showLive ? (
+          <a
+            href={liveLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`View ${name} live site`}
+            className="hover:scale-125 duration-300"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="30"
+              height="30"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M15 3h6v6" />
+              <path d="M10 14 21 3" />
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+            </svg>
+          </a>
+        ) : (
+          <a
+            href={codeLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`View ${name} source code on GitHub`}
+            className="w-8 hover:scale-125 duration-300"
+          >
+            <Image
+              src={github}
+              alt="GitHub"
+              width={32}
+              height={32}
+              className="w-full h-auto"
+            />
+          </a>
+        )}
       </div>
     </RevealSection>
   );

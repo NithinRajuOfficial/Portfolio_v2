@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { techList } from "../../utils/commonImports";
 import { usePrefersReducedMotion } from "../../hooks/usePrefersReducedMotion";
+import GridLayout from "../GridLayout";
 
 export default function MiddleHeader() {
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -12,6 +13,7 @@ export default function MiddleHeader() {
 
   return (
     <section className="bg-darkPurple py-6 overflow-hidden group">
+      <GridLayout />
       <div
         className={`flex w-max gap-10 ${
           prefersReducedMotion

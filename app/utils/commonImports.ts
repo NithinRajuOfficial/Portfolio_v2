@@ -117,28 +117,28 @@ const socialMediaList = [
 const contactEmail = "nithinraju909@gmail.com";
 
 const projectData = [
-  {
-    name: "DressUpLand",
-    about:
-      "Basic e-commerce website made using Nodejs and Expressjs with server side rendering and database using MongoDb",
-    tech: ["Node.js", "Express.js", "MongoDB"],
-    img: dressUpLandImg,
-    // liveLink: "https://dressupland.store/",
-    codeLink: "https://github.com/NithinRajuOfficial/DressUpLand",
-    // liveSite: liveSiteLink,
-    github: githubLink,
-  },
-  {
-    name: "TravelFreaks",
-    about:
-      "Social media platform for travelers made using ReactJs in frontend and Nodejs, Expressjs in backend and database using MongoDb",
-    tech: ["React", "Node.js", "Express.js", "MongoDB"],
-    img: travelFreaksImg,
-    // liveLink: "https://travelfreaks.nithin.website/",
-    codeLink: "https://github.com/NithinRajuOfficial/Travel-Freaks",
-    // liveSite: liveSiteLink,
-    github: githubLink,
-  },
+  // {
+  //   name: "DressUpLand",
+  //   about:
+  //     "Basic e-commerce website made using Nodejs and Expressjs with server side rendering and database using MongoDb",
+  //   tech: ["Node.js", "Express.js", "MongoDB"],
+  //   img: dressUpLandImg,
+  //   // liveLink: "https://dressupland.store/",
+  //   codeLink: "https://github.com/NithinRajuOfficial/DressUpLand",
+  //   // liveSite: liveSiteLink,
+  //   github: githubLink,
+  // },
+  // {
+  //   name: "TravelFreaks",
+  //   about:
+  //     "Social media platform for travelers made using ReactJs in frontend and Nodejs, Expressjs in backend and database using MongoDb",
+  //   tech: ["React", "Node.js", "Express.js", "MongoDB"],
+  //   img: travelFreaksImg,
+  //   // liveLink: "https://travelfreaks.nithin.website/",
+  //   codeLink: "https://github.com/NithinRajuOfficial/Travel-Freaks",
+  //   // liveSite: liveSiteLink,
+  //   github: githubLink,
+  // },
   {
     name: "StegoVault",
     about:
@@ -152,26 +152,8 @@ const projectData = [
       "Canvas API",
     ],
     img: stegoVaultImg,
-    // liveLink: "https://stego-vault-secure.vercel.app/",
-    codeLink: "https://github.com/NithinRajuOfficial/Stego_Vault",
-    // liveSite: liveSiteLink,
-    github: githubLink,
-  },
-  {
-    name: "P2P_Stream",
-    about:
-      "A peer-to-peer streaming platform enabling users to share and view live content seamlessly.",
-    tech: [
-      "Next.js 16",
-      "React 19",
-      "TypeScript",
-      "Tailwind CSS",
-      "WebTorrent",
-    ],
-    img: p2pStreamImg,
-    // liveLink: "https://p2p-stream.nithin.website/",
-    codeLink: "https://github.com/NithinRajuOfficial/P2P_Stream",
-    // liveSite: liveSiteLink,
+    liveLink: "https://stego-vault-secure.vercel.app/",
+    codeLink: "https://github.com/NithinRajuOfficial/Stego_Vault", // private repo — liveLink takes precedence in the card
     github: githubLink,
   },
   {
@@ -228,6 +210,23 @@ const projectData = [
     // liveSite: liveSiteLink,
     github: githubLink,
   },
+  {
+    name: "P2P_Stream",
+    about:
+      "A peer-to-peer streaming platform enabling users to share and view live content seamlessly.",
+    tech: [
+      "Next.js 16",
+      "React 19",
+      "TypeScript",
+      "Tailwind CSS",
+      "WebTorrent",
+    ],
+    img: p2pStreamImg,
+    // liveLink: "https://p2p-stream.nithin.website/",
+    codeLink: "https://github.com/NithinRajuOfficial/P2P_Stream",
+    // liveSite: liveSiteLink,
+    github: githubLink,
+  }
 ];
 
 export { techList, socialMediaList, projectData, contactEmail };

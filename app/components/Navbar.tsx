@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { MouseEvent } from "react";
 
-import { useIntersectionObserver } from "../hooks/useIntersectionObserver";
+import GridLayout from "./GridLayout";
 
 const navLinks = [
   { hash: "home", label: "Home" },
@@ -13,20 +13,50 @@ const navLinks = [
   { hash: "contact", label: "Contact" },
 ];
 
+// How far from the top of the viewport a section's top edge must be to count
+// as "active". Matches roughly the navbar height + a small buffer.
+const SCROLL_OFFSET = 80;
+
+function getActiveSection(): string {
+  // Work backwards through sections — the last one whose top is at or above
+  // the offset line is the one currently in view.
+  for (let i = navLinks.length - 1; i >= 0; i--) {
+    const el = document.getElementById(navLinks[i].hash);
+    if (el && el.getBoundingClientRect().top <= SCROLL_OFFSET) {
+      return navLinks[i].hash;
+    }
+  }
+  return navLinks[0].hash;
+}
+
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState(() => {
-    if (typeof window === "undefined") return "home";
-    const hash = window.location.hash.replace("#", "");
-    return hash && navLinks.some((link) => link.hash === hash) ? hash : "home";
-  });
+  const [activeSection, setActiveSection] = useState("home");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isClickScrollingRef = useRef(false);
-  const clickScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined
-  );
+  const clickScrollTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
-  // Close mobile menu when viewport reaches the sm breakpoint
+  // Sync active section on scroll.
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isClickScrollingRef.current) return;
+      setActiveSection(getActiveSection());
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Run once on mount to handle direct hash links (e.g. /#contact).
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // After hydration, scroll to the section in the URL hash if present.
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+    if (hash && navLinks.some((link) => link.hash === hash)) {
+      document.getElementById(hash)?.scrollIntoView({ behavior: "auto" });
+    }
+  }, []);
+
+  // Close mobile menu when viewport reaches the sm breakpoint.
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 640px)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -37,65 +67,28 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (activeSection === "home") return;
-    const element = document.getElementById(activeSection);
-    element?.scrollIntoView({ behavior: "auto" });
-    // intentionally runs once on mount only to restore scroll position
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useIntersectionObserver(
-    () => navLinks.map(({ hash }) => document.getElementById(hash)),
-    (entries) => {
-      if (isClickScrollingRef.current) return;
-
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort(
-          (a, b) =>
-            b.intersectionRect.height - a.intersectionRect.height
-        );
-
-      if (visible.length > 0) {
-        setActiveSection(visible[0].target.id);
-      }
-    },
-    { threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] }
-  );
-
-  useEffect(() => {
     return () => clearTimeout(clickScrollTimeoutRef.current);
   }, []);
 
-  const handleNavClick = (
-    event: MouseEvent<HTMLAnchorElement>,
-    hash: string
-  ) => {
+  const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, hash: string) => {
     event.preventDefault();
-
     const element = document.getElementById(hash);
-
     if (element) {
       isClickScrollingRef.current = true;
-
       setActiveSection(hash);
-
       element.scrollIntoView({ behavior: "smooth" });
-
       history.replaceState(null, "", `#${hash}`);
-
       clearTimeout(clickScrollTimeoutRef.current);
-
       clickScrollTimeoutRef.current = setTimeout(() => {
         isClickScrollingRef.current = false;
       }, 1000);
     }
-
     setIsMenuOpen(false);
   };
 
   return (
     <nav className="px-4 py-6 bg-gradient-slant w-full z-30 bg-transparent fixed sm:px-20">
+      <GridLayout />
       <div className="flex justify-between items-center">
         <button
           type="button"
@@ -132,9 +125,7 @@ export default function Navbar() {
                 href={`#${hash}`}
                 onClick={(event) => handleNavClick(event, hash)}
                 className={`hover:scale-110 duration-300 inline-block ${
-                  activeSection === hash
-                    ? "text-amber-400 font-bold"
-                    : ""
+                  activeSection === hash ? "text-amber-400 font-bold" : ""
                 }`}
               >
                 {label}

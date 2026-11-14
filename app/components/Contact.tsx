@@ -2,6 +2,7 @@ import Image from "next/image";
 
 import { contactEmail, socialMediaList } from "../utils/commonImports";
 import RevealSection from "./RevealSection";
+import GridLayout from "./GridLayout";
 
 export default function Contact() {
   return (
@@ -10,6 +11,7 @@ export default function Contact() {
       id="contact"
       className="herobg-gradient-slant px-6 md:px-20 py-16 text-center text-white"
     >
+     <GridLayout />
       <h1 className="text-3xl font-semibold pb-2">Get In Touch</h1>
 
       <p className="max-w-xl mx-auto pb-6 font-light">

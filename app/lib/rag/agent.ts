@@ -1,8 +1,7 @@
 /**
  * RAG agent — query-time only (no ingestion).
- * Ported from Web_AI_Agent/index4.js with OpenAI replaced by Gemini 2.0 Flash.
  *
- * Pinecone handles server-side embedding (llama-text-embed-v2) — unchanged.
+ * Pinecone handles server-side embedding (llama-text-embed-v2)
  * Only the two LLM calls (classifier + synthesizer) now use @google/genai.
  */
 

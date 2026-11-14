@@ -289,7 +289,7 @@ export default function ChatWidget() {
   return (
     <>
       {/* ── Floating trigger button ── */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
+      <div className={`fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3 ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}>
         {/* Chat panel */}
         <div
           role="dialog"
@@ -423,7 +423,7 @@ export default function ChatWidget() {
           aria-label={isOpen ? "Close chat assistant" : "Open chat assistant"}
           aria-expanded={isOpen}
           aria-controls="chat-panel"
-          className="relative w-14 h-14 rounded-full bg-lightPurple text-white shadow-[0_4px_20px_rgba(129,33,208,0.55)] hover:shadow-[0_4px_28px_rgba(129,33,208,0.75)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+          className="relative w-14 h-14 rounded-full bg-lightPurple text-white shadow-[0_4px_20px_rgba(129,33,208,0.55)] hover:shadow-[0_4px_28px_rgba(129,33,208,0.75)] hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center pointer-events-auto"
         >
           {/* Pulse rings — hidden if user prefers reduced motion */}
           {!isOpen && !prefersReducedMotion && (
