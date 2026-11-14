@@ -34,7 +34,7 @@ interface PineconeDocument {
 const CHUNK_SIZE = 180;
 const CHUNK_OVERLAP = 30;
 
-const COMPANIES = ["Tech Mission Solutions", "Dhruv 360"];
+const COMPANIES = ["Tech Mission Solutions", "Vaniyathans Software Solutions"];
 
 const PROJECTS = [
   "Amazing Kids Admin",
@@ -44,6 +44,8 @@ const PROJECTS = [
   "Service Connect",
   "YourMJ",
   "BuddyPair",
+  "DressUpLand",
+  "Travel Freaks",
 ];
 
 const VALID_INTENTS = [
@@ -57,6 +59,7 @@ const VALID_INTENTS = [
   "skills",
   "education",
   "profile",
+  "experience_years",
   "general",
 ];
 
@@ -132,6 +135,18 @@ function splitIntoChunks(
 }
 
 // ─── deterministic question detectors ────────────────────────────────────────
+
+function isExperienceYearsQuestion(userQuestion: string): boolean {
+  const q = userQuestion
+    .toLowerCase()
+    .replace(/[?!.,]+/g, " ")
+    .trim();
+  return (
+    /\b(how many|total|overall|years? of|yrs? of)\b.*\b(experience|exp)\b/.test(q) ||
+    /\b(experience|exp)\b.*\b(how many|total|overall|years?|yrs?)\b/.test(q) ||
+    /\bhow (long|much).*(work|experience|exp)\b/.test(q)
+  );
+}
 
 function isEmploymentStatusQuestion(userQuestion: string): boolean {
   const q = userQuestion
@@ -221,11 +236,12 @@ AVAILABLE INTENTS:
 8. skills
 9. education
 10. profile
-11. general
+11. experience_years
+12. general
 
 KNOWN COMPANIES:
 - Tech Mission Solutions
-- Dhruv 360
+- Vaniyathans Software Solutions
 
 KNOWN PROFESSIONAL PROJECTS:
 - Amazing Kids Admin
@@ -235,6 +251,8 @@ KNOWN PROFESSIONAL PROJECTS:
 - Service Connect
 - YourMJ
 - BuddyPair
+- DressUpLand
+- Travel Freaks
 
 CONVERSATION RULES:
 - Use history to resolve "these projects", "each of them", "the first one", etc.
@@ -301,7 +319,14 @@ Return ONLY valid JSON matching this schema:
     result.standalone_question = userQuestion;
 
   // Deterministic overrides
-  if (isEmploymentStatusQuestion(userQuestion)) {
+  if (isExperienceYearsQuestion(userQuestion)) {
+    result.intent = "experience_years";
+    result.company = null;
+    result.project = null;
+    result.standalone_question =
+      "What is Nithin's total years of professional experience?";
+    result.reason = "The user is asking about total years of experience.";
+  } else if (isEmploymentStatusQuestion(userQuestion)) {
     result.intent = "employment_status";
     result.company = null;
     result.project = null;
@@ -403,6 +428,19 @@ async function retrieveDocuments(
 
   if (intent === "employment_status") {
     matches = await retrieveByMetadata("section", "professional_experience");
+  } else if (intent === "experience_years") {
+    // Pull both the profile header (has "Overall Experience: 5.1 Years") and
+    // all professional_experience records so we have full date coverage.
+    const [profileDocs, expDocs] = await Promise.all([
+      retrieveByMetadata("section", "profile"),
+      retrieveByMetadata("section", "professional_experience"),
+    ]);
+    matches = [...profileDocs, ...expDocs];
+  } else if (intent === "company_experience" && company) {
+    matches = await retrieveByMetadata("company", company);
+  } else if (intent === "company_experience") {
+    // No specific company — return all professional experience records
+    matches = await retrieveByMetadata("section", "professional_experience");
   } else if (intent === "project_list" || intent === "project_overview") {
     matches = await retrieveByMetadata("section", "project");
   } else if (
@@ -410,8 +448,6 @@ async function retrieveDocuments(
     intent === "personal_project_overview"
   ) {
     matches = await retrieveByMetadata("section", "website");
-  } else if (intent === "company_experience" && company) {
-    matches = await retrieveByMetadata("company", company);
   } else if (intent === "project_details" && project) {
     matches = await retrieveByMetadata("project", project);
   } else if (intent === "project_details" && company) {
@@ -460,6 +496,14 @@ function buildContext(matches: PineconeDocument[]): string {
 function parseEmploymentDate(value: string): Date | null {
   const c = value.trim().replace(/,/g, "");
 
+  // DD/MM/YYYY  e.g. 24/03/2025
+  const dmy = c.match(/^(\d{1,2})\/(\d{1,2})\/((?:19|20)\d{2})$/);
+  if (dmy) {
+    const d = new Date(Date.UTC(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1])));
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  // Month YYYY  e.g. March 2025
   const monthYear = c.match(
     /^(Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+(\d{4})$/i,
   );
@@ -468,6 +512,7 @@ function parseEmploymentDate(value: string): Date | null {
     return isNaN(d.getTime()) ? null : d;
   }
 
+  // Bare year  e.g. 2021
   const yearMatch = c.match(/^(19\d\d|20[0-3]\d)$/);
   if (yearMatch) return new Date(Date.UTC(Number(yearMatch[1]), 0, 1));
 
@@ -477,8 +522,9 @@ function parseEmploymentDate(value: string): Date | null {
 function extractEmploymentDates(
   text: string,
 ): Array<{ value: string; date: Date }> {
+  // Matches DD/MM/YYYY, Month YYYY, or bare YYYY
   const datePattern =
-    /\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}\b|\b(19\d\d|20[0-3]\d)\b/gi;
+    /\b\d{1,2}\/\d{1,2}\/(?:19|20)\d{2}\b|\b(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4}\b|\b(19\d\d|20[0-3]\d)\b/gi;
 
   return [...text.matchAll(datePattern)]
     .map((m) => ({ value: m[0], date: parseEmploymentDate(m[0])! }))
@@ -486,7 +532,8 @@ function extractEmploymentDates(
 }
 
 function hasExplicitCurrentEmployment(text: string): boolean {
-  return /(?:\b\d{4}\b|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4})\s*(?:-|–|—|to|till|until)\s*(?:present|current|ongoing|date)/i.test(
+  // Covers:  DD/MM/YYYY – present  |  Month YYYY – present  |  YYYY – present
+  return /(?:\b\d{1,2}\/\d{1,2}\/(?:19|20)\d{2}\b|\b(?:19|20)\d{2}\b|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\s+\d{4})\s*(?:-|–|—|to|till|until)\s*(?:present|current|ongoing|date)/i.test(
     text,
   );
 }
@@ -600,7 +647,7 @@ function buildProfessionalProjectList(matches: PineconeDocument[]): string {
 
   const companyOrder = [
     "Tech Mission Solutions",
-    "Dhruv 360",
+    "Vaniyathans Software Solutions",
     "Company not specified",
   ];
   const companyMap = new Map<string, string[]>();

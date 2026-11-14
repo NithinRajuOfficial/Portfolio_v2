@@ -27,7 +27,7 @@ export default function SubHeader() {
 
         <p className="text-4xl md:text-5xl leading-10">I&apos;m a</p>
 
-        <p className="text-fluid-role pb-4 min-h-[1.15em] max-w-4">
+        <p className="text-fluid-role pb-4 min-h-[1.15em]">
           <RotatingRole />
         </p>
 

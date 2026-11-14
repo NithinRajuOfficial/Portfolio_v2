@@ -21,17 +21,15 @@ export default function MainContainer() {
         <h1 className="text-3xl font-semibold pb-2">About Me</h1>
 
         <p className="text-xl font-normal leading-8 text-wrap text-pink/90">
-          Hi, I&apos;m Nithin Raju, a Software Engineer who enjoys building
-          production-grade web platforms that solve real problems at scale. Over
-          the past years, I&apos;ve worked across React, Next.js, TypeScript,
-          and Node.js to ship everything from a custom video/media player and
-          device-fleet management tools for a digital-signage platform, to a
-          franchise-based service marketplace and a real-time dating app. I care
-          about owning features end-to-end — from UI design through API
-          integration, feature-flagged rollouts, and clean, scalable
-          architecture. When I&apos;m not building, I&apos;m usually exploring
-          new tools in the React ecosystem. Let&apos;s connect if you&apos;re
-          working on something interesting!
+          Hi, I&apos;m Nithin Raju, a Software Engineer with 5+ years of
+          experience building production-grade web platforms across media
+          streaming, admin tooling, marketplaces, and notification systems.
+          I&apos;ve worked across React, Next.js, TypeScript, and Node.js, and
+          recently expanded into Generative AI — building RAG pipelines,
+          semantic search, and LLM-powered features. I care about owning
+          features end-to-end — from UI design through API integration,
+          feature-flagged rollouts, and clean, scalable architecture.
+          Let&apos;s connect if you&apos;re working on something interesting!
         </p>
       </RevealSection>
     </section>

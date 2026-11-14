@@ -188,7 +188,12 @@ export default function ChatWidget() {
     }
   }, [isOpen]);
 
-  // Convert messages to the history format the API expects (exclude welcome)
+  // Re-focus input as soon as the cooldown lifts and the textarea is re-enabled
+  useEffect(() => {
+    if (!isCoolingDown && !isLoading && isOpen) {
+      inputRef.current?.focus();
+    }
+  }, [isCoolingDown, isLoading, isOpen]);
   const buildHistory = useCallback(() => {
     return messages
       .filter((m) => m.id !== "welcome")

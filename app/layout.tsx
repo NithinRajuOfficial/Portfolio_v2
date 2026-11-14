@@ -10,25 +10,25 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Nithin Raju | Full Stack Developer",
+  title: "Nithin Raju | Software Engineer | Generative AI",
   description:
-    "Nithin Raju is a MERN stack developer specialising in building dynamic, responsive web applications with MongoDB, Express.js, React and Node.js.",
+    "Nithin Raju is a Software Engineer with 5+ years of experience building production-grade web platforms using React, Next.js, TypeScript, and Node.js, with expertise in Generative AI and RAG systems.",
   metadataBase: new URL("https://nithin-raju.vercel.app"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
-    title: "Nithin Raju | Full Stack Developer",
+    title: "Nithin Raju | Software Engineer | Generative AI",
     description:
-      "Nithin Raju is a MERN stack developer specialising in building dynamic, responsive web applications with MongoDB, Express.js, React and Node.js.",
+      "Nithin Raju is a Software Engineer with 5+ years of experience building production-grade web platforms using React, Next.js, TypeScript, and Node.js, with expertise in Generative AI and RAG systems.",
     url: "https://nithin-raju.vercel.app/",
   },
   twitter: {
     card: "summary",
-    title: "Nithin Raju | Full Stack Developer",
+    title: "Nithin Raju | Software Engineer | Generative AI",
     description:
-      "Nithin Raju is a MERN stack developer specialising in building dynamic, responsive web applications with MongoDB, Express.js, React and Node.js.",
+      "Nithin Raju is a Software Engineer with 5+ years of experience building production-grade web platforms using React, Next.js, TypeScript, and Node.js, with expertise in Generative AI and RAG systems.",
   },
 };
 
